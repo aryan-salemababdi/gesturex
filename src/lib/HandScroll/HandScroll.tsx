@@ -1,4 +1,3 @@
-'use client';
 import { useEffect, useRef } from 'react';
 import type { FC, ReactNode } from 'react';
 import { Hands } from '@mediapipe/hands';
