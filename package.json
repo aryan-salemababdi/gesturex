@@ -5,6 +5,14 @@
   "main": "./dist/index.cjs",
   "module": "./dist/index.es.js",
   "types": "dist/types/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aryan-salemababdi/gesturex.git"
+  },
+  "bugs": {
+    "url": "https://github.com/aryan-salemababdi/gesturex/issues"
+  },
+  "homepage": "https://github.com/aryan-salemababdi/gesturex#readme",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
