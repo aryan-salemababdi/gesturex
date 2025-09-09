@@ -73,6 +73,7 @@ const HandScroll: FC<HandScrollProps> = ({
 
     return () => {
       camera.stop();
+      hands.close();
       clearInterval(interval);
     };
   }, [scrollSpeed]);
