@@ -1,5 +1,6 @@
+'use client';
 import { useEffect, useRef } from 'react';
-import type { FC, ReactNode } from 'react';
+import type { FC, ReactNode, RefObject } from 'react';
 import { Hands } from '@mediapipe/hands';
 import { Camera } from '@mediapipe/camera_utils';
 
@@ -7,15 +8,21 @@ interface HandScrollProps {
   children: ReactNode;
   scrollSpeed?: number;
   showStatus?: boolean;
+  direction?: 'vertical' | 'horizontal' | 'both';
+  targetRef?: RefObject<HTMLElement>;
+  epsilon?: number;
 }
 
 const HandScroll: FC<HandScrollProps> = ({
   children,
   scrollSpeed = 5,
   showStatus = true,
+  direction = 'vertical',
+  targetRef,
+  epsilon = 0.1,
 }) => {
   const videoRef = useRef<HTMLVideoElement | null>(null);
-  const scrollDirection = useRef<'up' | 'down' | null>(null);
+  const scrollDir = useRef<'up' | 'down' | 'left' | 'right' | null>(null);
 
   useEffect(() => {
     if (!videoRef.current) return;
@@ -37,19 +44,33 @@ const HandScroll: FC<HandScrollProps> = ({
         !results.multiHandLandmarks ||
         results.multiHandLandmarks.length === 0
       ) {
-        scrollDirection.current = null;
+        scrollDir.current = null;
         return;
       }
 
       const lm = results.multiHandLandmarks[0][8];
-      const y = lm.y;
+      const { x, y } = lm;
 
-      if (y < 0.4) {
-        scrollDirection.current = 'up';
-      } else if (y > 0.6) {
-        scrollDirection.current = 'down';
-      } else {
-        scrollDirection.current = null;
+      const y0 = 0.5,
+        x0 = 0.5;
+
+      const deltaY = y - y0;
+      const deltaX = x - x0;
+
+      if (direction === 'vertical' || direction === 'both') {
+        if (Math.abs(deltaY) > Math.abs(deltaX)) {
+          if (y < y0 - epsilon) scrollDir.current = 'up';
+          else if (y > y0 + epsilon) scrollDir.current = 'down';
+          else scrollDir.current = null;
+        }
+      }
+
+      if (direction === 'horizontal' || direction === 'both') {
+        if (Math.abs(deltaX) > Math.abs(deltaY)) {
+          if (x < x0 - epsilon) scrollDir.current = 'left';
+          else if (x > x0 + epsilon) scrollDir.current = 'right';
+          else if (direction === 'horizontal') scrollDir.current = null;
+        }
       }
     });
 
@@ -64,10 +85,20 @@ const HandScroll: FC<HandScrollProps> = ({
     camera.start();
 
     const interval = setInterval(() => {
-      if (scrollDirection.current === 'up') {
-        window.scrollBy({ top: -scrollSpeed, behavior: 'auto' });
-      } else if (scrollDirection.current === 'down') {
-        window.scrollBy({ top: scrollSpeed, behavior: 'auto' });
+      const target = targetRef?.current || window;
+      switch (scrollDir.current) {
+        case 'up':
+          target.scrollBy({ top: -scrollSpeed, behavior: 'auto' });
+          break;
+        case 'down':
+          target.scrollBy({ top: scrollSpeed, behavior: 'auto' });
+          break;
+        case 'left':
+          target.scrollBy({ left: -scrollSpeed, behavior: 'auto' });
+          break;
+        case 'right':
+          target.scrollBy({ left: scrollSpeed, behavior: 'auto' });
+          break;
       }
     }, 50);
 
@@ -76,7 +107,7 @@ const HandScroll: FC<HandScrollProps> = ({
       hands.close();
       clearInterval(interval);
     };
-  }, [scrollSpeed]);
+  }, [scrollSpeed, direction, epsilon, targetRef]);
 
   return (
     <>
@@ -94,7 +125,7 @@ const HandScroll: FC<HandScrollProps> = ({
             fontSize: '12px',
           }}
         >
-          Hand Scroll Active
+          Hand Scroll Active {scrollDir.current ? `(${scrollDir.current})` : ''}
         </p>
       )}
       {children}
