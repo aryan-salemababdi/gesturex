@@ -1,7 +1,7 @@
 {
   "name": "gesturex",
   "private": false,
-  "version": "1.1.0",
+  "version": "1.1.1",
   "main": "./dist/index.cjs",
   "module": "./dist/index.es.js",
   "types": "dist/types/index.d.ts",
@@ -14,11 +14,11 @@
   },
   "homepage": "https://github.com/aryan-salemababdi/gesturex#readme",
   "scripts": {
-  "dev": "vite",
-  "build": "npm run build:types && vite build",
-  "build:types": "tsc --emitDeclarationOnly",
-  "lint": "eslint .",
-  "preview": "vite preview"
+    "dev": "vite",
+    "build": "npm run build:types && vite build",
+    "build:types": "tsc --emitDeclarationOnly",
+    "lint": "eslint .",
+    "preview": "vite preview"
   },
   "files": [
     "dist"
