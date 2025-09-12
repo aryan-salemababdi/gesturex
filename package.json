@@ -14,10 +14,11 @@
   },
   "homepage": "https://github.com/aryan-salemababdi/gesturex#readme",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc -b && vite build",
-    "lint": "eslint .",
-    "preview": "vite preview"
+  "dev": "vite",
+  "build": "npm run build:types && vite build",
+  "build:types": "tsc --emitDeclarationOnly",
+  "lint": "eslint .",
+  "preview": "vite preview"
   },
   "files": [
     "dist"
